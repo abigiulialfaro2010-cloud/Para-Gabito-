@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Gabrielito - Día del autito Hot Wheels</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: radial-gradient(circle, #0f172a 0%, #020617 100%);
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Pantalla de Carga - Toyota Supra MK4 */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #050505;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            transition: opacity 0.8s ease;
+        }
+        .supra-container {
+            width: 280px;
+            height: 160px;
+            border: 2px dashed #f97316;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(249, 115, 22, 0.05);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        .supra-text-car {
+            font-size: 45px;
+            animation: drive 1.5s infinite alternate ease-in-out;
+        }
+        @keyframes drive {
+            0% { transform: translateX(-20px) scale(0.95); }
+            100% { transform: translateX(20px) scale(1.05); }
+        }
+        .loading-bar {
+            width: 220px;
+            height: 8px;
+            background: #1e293b;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        .loading-progress {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #38bdf8, #f97316);
+            animation: load 3s forwards linear;
+        }
+        @keyframes load {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+        .loading-title {
+            font-size: 1.1rem;
+            color: #94a3b8;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        /* Contenido Principal */
+        #main-content {
+            display: none;
+            opacity: 0;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 480px;
+            padding: 20px;
+            text-align: center;
+            transition: opacity 1s ease;
+            position: relative;
+        }
+
+        /* Carritos Hot Wheels cruzando */
+        .floating-car {
+            position: absolute;
+            font-size: 24px;
+            animation: fly-car 4s infinite linear;
+            z-index: 2;
+            pointer-events: none;
+        }
+        @keyframes fly-car {
+            0% { transform: translateX(-150px) translateY(0) rotate(0deg); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateX(350px) translateY(-50px) rotate(15deg); opacity: 0; }
+        }
+
+        /* Ramos de Tulipanes Azules tipo el video */
+        .tulips-bouquet {
+            position: relative;
+            width: 280px;
+            height: 220px;
+            margin: 15px 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+        .tulip {
+            position: absolute;
+            bottom: 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: float-tulip 3s ease-in-out infinite alternate;
+        }
+        .tulip-head {
+            width: 32px;
+            height: 40px;
+            background: radial-gradient(circle, #60a5fa 0%, #1e3a8a 80%);
+            border-radius: 50% 50% 40% 40%;
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.6);
+            border: 1px solid #93c5fd;
+        }
+        .tulip-stem {
+            width: 4px;
+            height: 90px;
+            background: #15803d;
+            border-radius: 2px;
+        }
+        @keyframes float-tulip {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-8px) rotate(2deg); }
+        }
+        /* Posiciones de los tulipanes formando el arreglo */
+        .tulip:nth-child(1) { left: 30px; animation-delay: 0.2s; }
+        .tulip:nth-child(2) { left: 70px; animation-delay: 0.5s; }
+        .tulip:nth-child(3) { left: 110px; animation-delay: 0.1s; }
+        .tulip:nth-child(4) { left: 150px; animation-delay: 0.4s; }
+        .tulip:nth-child(5) { left: 190px; animation-delay: 0.3s; }
+        .tulip:nth-child(6) { left: 230px; animation-delay: 0.6s; }
+
+        /* Jarrón / Lazos */
+        .vase {
+            position: absolute;
+            bottom: 0;
+            width: 100px;
+            height: 70px;
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.4), rgba(30, 58, 138, 0.6));
+            border: 2px solid #38bdf8;
+            clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            color: #fff;
+            font-size: 1.1rem;
+            letter-spacing: 2px;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+        }
+
+        /* Tarjetas con Versículos y Ramos Hot Wheels */
+        .card-slider {
+            width: 100%;
+            background: rgba(30, 41, 59, 0.85);
+            border: 1px solid rgba(249, 115, 22, 0.4);
+            border-radius: 15px;
+            padding: 15px;
+            margin: 15px 0;
+            backdrop-filter: blur(6px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+        .card {
+            display: none;
+        }
+        .card.active {
+            display: block;
+            animation: fadeIn 0.6s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .mini-bouquet-img {
+            font-size: 35px;
+            margin-bottom: 8px;
+        }
+        .card h2 {
+            color: #38bdf8;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            text-shadow: 0 0 10px rgba(56, 189, 248, 0.3);
+        }
+        .card p {
+            font-size: 0.95rem;
+            line-height: 1.4;
+            color: #cbd5e1;
+        }
+
+        /* Botones de Navegación */
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        .btn {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+            transition: transform 0.2s;
+        }
+        .btn:active {
+            transform: scale(0.95);
+        }
+
+        .music-toggle {
+            margin-top: 15px;
+            background: transparent;
+            border: 1px solid #38bdf8;
+            color: #38bdf8;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Pantalla de Carga -->
+    <div id="loading-screen">
+        <div class="supra-container">
+            <div class="supra-text-car">🏎️💨</div>
+        </div>
+        <div class="loading-bar">
+            <div class="loading-progress"></div>
+        </div>
+        <div class="loading-title">CARGANDO LA MÁQUINA...</div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <div id="main-content">
+        <div class="floating-car" style="top: 20px;">🏎️</div>
+        <div class="floating-car" style="top: 120px; animation-delay: 2s;">🚗💨</div>
+
+        <h1 style="color: #f97316; font-size: 1.4rem; margin-bottom: 2px;">Feliz día de los carritos Hot Wheels ✨🫶</h1>
+        <p style="color: #38bdf8; font-size: 0.9rem; margin-bottom: 5px;">Ten tu ramo</p>
+
+        <!-- Ramo de Tulipanes Azules con la base "CHICHE" -->
+        <div class="tulips-bouquet">
+            <div class="tulip"><div class="tulip-head"></div><div class="tulip-stem"></div></div>
+            <div class="tulip"><div class="tulip-head"></div><div class="tulip-stem"></div></div>
+            <div class="tulip"><div class="tulip¡Ah, ya te entendí perfecto! Con el video queda clarísimo: la idea es mantener el diseño original de los tulipanes azules con tallos y el jarrón tipo cristal, pero **poniendo las letras de "CHICHE" en las flores (una letra en cada flor de arriba)** y que los autitos (como el Supra o carritos) crucen volando por la pantalla.
+
+Aquí tienes el código actualizado con los tulipanes exactos, cada flor con su letra de **CHICHE**, los versículos bíblicos y el mensaje final:
+
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Para Gabrielito - Día del Hombre</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            background: #050b14;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        /* Pantalla de Carga - Toyota Supra MK4 */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #020617;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+            transition: opacity 0.8s ease;
+        }
+        .supra-container {
+            width: 280px;
+            height: 160px;
+            border: 2px dashed #38bdf8;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(56, 189, 248, 0.05);
+            margin-bottom: 20px;
+        }
+        .supra-text-car {
+            font-size: 45px;
+            animation: drive 1.5s infinite alternate ease-in-out;
+        }
+        @keyframes drive {
+            0% { transform: translateX(-25px) scale(0.95); }
+            100% { transform: translateX(25px) scale(1.05); }
+        }
+        .loading-bar {
+            width: 220px;
+            height: 8px;
+            background: #1e293b;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+        .loading-progress {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #38bdf8, #f97316);
+            animation: load 3s forwards linear;
+        }
+        @keyframes load {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+        .loading-title {
+            font-size: 1.1rem;
+            color: #94a3b8;
+            letter-spacing: 2px;
+            font-weight: bold;
+        }
+
+        /* Contenido Principal */
+        #main-content {
+            display: none;
+            opacity: 0;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 480px;
+            padding: 20px;
+            text-align: center;
+            transition: opacity 1s ease;
+        }
+
+        .main-title {
+            color: #f97316;
+            font-size: 1.4rem;
+            margin-bottom: 2px;
+            text-shadow: 0 0 10px rgba(249, 115, 22, 0.4);
+        }
+        .subtitle {
+            color: #38bdf8;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+        }
+
+        /* Estilo tipo Ramo del Video (Tulipanes + Jarrón) */
+        .bouquet-scene {
+            position: relative;
+            width: 300px;
+            height: 340px;
+            margin: 10px 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+        }
+
+        /* Autito cruzando la pantalla */
+        .flying-car {
+            position: absolute;
+            font-size: 28px;
+            top: 40px;
+            animation: flyCar 4s infinite linear;
+            z-index: 10;
+        }
+        @keyframes flyCar {
+            0% { left: -40px; transform: rotate(-10deg); }
+            50% { transform: rotate(10deg); }
+            100% { left: 320px; transform: rotate(-5deg); }
+        }
+
+        /* Tulipanes con letras CHICHE */
+        .tulips-row {
+            position: absolute;
+            top: 20px;
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            width: 100%;
+            z-index: 5;
+        }
+        .tulip {
+            width: 38px;
+            height: 55px;
+            background: linear-gradient(135deg, #60a5fa 0%, #1d4ed8 100%);
+            border-radius: 50% 50% 40% 40%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.1rem;
+            box-shadow: 0 0 15px rgba(96, 165, 250, 0.6);
+            border: 1px solid #93c5fd;
+            animation: sway 3s infinite alternate ease-in-out;
+        }
+        .tulip:nth-child(odd) { animation-delay: 0.5s; }
+        @keyframes sway {
+            0% { transform: rotate(-3deg); }
+            100% { transform: rotate(3deg); }
+        }
+
+        /* Tallos */
+        .stems {
+            position: absolute;
+            top: 70px;
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(90deg, 
+                transparent 15%, #15803d 15%, #166534 20%, transparent 20%,
+                transparent 35%, #15803d 35%, #166534 40%, transparent 40%,
+                transparent 55%, #15803d 55%, #166534 60%, transparent 60%,
+                transparent 75%, #15803d 75%, #166534 80%, transparent 80%
+            );
+            z-index: 2;
+        }
+
+        /* Jarrón / Florero estilo cristal */
+        .vase {
+            position: absolute;
+            bottom: 0;
+            width: 150px;
+            height: 130px;
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.3) 0%, rgba(14, 116, 144, 0.6) 100%);
+            clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+            border: 2px solid rgba(125, 211, 252, 0.8);
+            box-shadow: inset 0 0 15px rgba(255,255,255,0.4), 0 10px 25px rgba(0,0,0,0.6);
+            z-index: 4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .vase-ribbon {
+            width: 40px;
+            height: 15px;
+            background: #f97316;
+            border-radius: 4px;
+            box-shadow: 0 0 10px #f97316;
+        }
+
+        /* Tarjetas de Versículos */
+        .card-slider {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.85);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 15px;
+            padding: 18px;
+            margin: 10px 0;
+            backdrop-filter: blur(5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+        .card { display: none; }
+        .card.active { display: block; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card h2 {
+            color: #38bdf8;
+            font-size: 1.15rem;
+            margin-bottom: 8px;
+        }
+        .card p {
+            font-size: 0.95rem;
+            line-height: 1.4;
+            color: #e2e8f0;
+        }
+
+        /* Botones */
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+        .btn {
+            background: linear-gradient(135deg, #f97316 0%, #c2410c 100%);
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+        }
+        .surprise-btn {
+            margin-top: 15px;
+            background: transparent;
+            border: 1px solid #38bdf8;
+            color: #38bdf8;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+        .surprise-btn:hover {
+            background: rgba(56, 189, 248, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Pantalla de Carga Supra -->
+    <div id="loading-screen">
+        <div class="supra-container">
+            <div class="supra-text-car">🏎️💨</div>
+        </div>
+        <div class="loading-bar">
+            <div class="loading-progress"></div>
+        </div>
+        <div class="loading-title">CARGANDO LA MÁQUINA...</div>
+    </div>
+
+    <!-- Contenido Principal -->
+    <div id="main-content">
+        <h1 class="main-title">Feliz día de los carritos Hot Wheels ✨</h1>
+        <p class="subtitle">Ten tu ramo para Chiche 💙🧡</p>
+
+        <!-- Escena del Ramo (Tulipanes con CHICHE, Autito y Jarrón) -->
+        <div class="bouquet-scene">
+            <div class="flying-car">🏎️</div>
+            <div class="tulips-row">
+                <div class="tulip">C</div>
+                <div class="tulip">H</div>
+                <div class="tulip">I</div>
+                <div class="tulip">C</div>
+                <div class="tulip">H</div>
+                <div class="tulip">E</div>
+            </div>
+            <div class="stems"></div>
+            <div class="vase">
+                <div class="vase-ribbon"></div>
+            </div>
+        </div>
+
+        <!-- Carrusel de Versículos y Mensajes -->
+        <div class="card-slider">
+            <div class="card active">
+                <h2>📖 Salmos 37:5</h2>
+                <p>«Encomienda al Señor tu camino, confía en él, y él hará.» Que Dios guíe cada uno de tus pasos y metas, Gabito.</p>
+            </div>
+            <div class="card">
+                <h2>📖 Proverbios 17:17</h2>
+                <p>«En todo tiempo ama el amigo, y es como un hermano en tiempo de angustia.» Gracias por ser tan especial.</p>
+            </div>
+            <div class="card">
+                <h2>✨ ¡Para ti, Chiche!</h2>
+                <p>Que disfrutes este día al máximo, que la pases increíble y que nunca te falte esa gran sonrisa.</p>
+            </div>
+        </div>
+
+        <!-- Botones de Navegación -->
+        <div class="nav-buttons">
+            <button class="btn" onclick="prevCard()">Anterior</button>
+            <button class="btn" onclick="nextCard()">Siguiente</button>
+        </div>
+
+        <!-- Botón Sorpresa Final -->
+        <button class="surprise-btn" onclick="showFinalMessage()">¡Toca aquí para tu sorpresa! 🎁</button>
+    </div>
+
+    <script>
+        // Quitar pantalla de carga tras 3 segundos
+        setTimeout(() => {
+            const loading = document.getElementById('loading-screen');
+            const main = document.getElementById('main-content');
+            loading.style.opacity = '0';
+            setTimeout(() => {
+                loading.style.display = 'none';
+                main.style.display = 'flex';
+                main.style.opacity = '1';
+            }, 800);
+        }, 3000);
+
+        // Control del carrusel
+        let currentCard = 0;
+        const cards = document.querySelectorAll('.card');
+
+        function showCard(index) {
+            cards.forEach((card, i) => {
+                card.classList.remove('active');
+                if (i === index) card.classList.add('active');
+            });
+        }
+
+        function nextCard() {
+            currentCard = (currentCard + 1) % cards.length;
+            showCard(currentCard);
+        }
+
+        function prevCard() {
+            currentCard = (currentCard - 1 + cards.length) % cards.length;
+            showCard(currentCard);
+        }
+
+        function showFinalMessage() {
+            alert('¡Disfruta mucho tu día, Gabito! TE QUIEROOOOO. 💙🧡🏎️✨');
+        }
+    </script>
+</body>
+</html>
